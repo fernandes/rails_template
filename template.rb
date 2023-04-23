@@ -20,6 +20,9 @@ def install_tool(tool)
   apply "#{tool}.rb"
 end
 
+git add: "."
+git commit: "-m rails"
+
 tools = [
   "vite",
   "tailwind",

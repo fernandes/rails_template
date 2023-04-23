@@ -15,7 +15,7 @@ EOF
   end
 
   git add: "."
-  git commit: "-m my personal config"
+  git commit: "-m 'personal config'"
 end
 
 do_tool_bundle

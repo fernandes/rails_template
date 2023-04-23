@@ -18,23 +18,19 @@ after_bundle do
 
   remove_file "app/assets/stylesheets/application.css"
 
-  append_to_file 'app/frontend/entrypoints/application.js', 'import "../controllers/index"'
-
-  inside('app') do
-    run 'mkdir -p javascript/entrypoints/'
-    run 'mv frontend/entrypoints/application.js javascript/entrypoints/'
-    run 'rm -rf frontend/entrypoints/'
-  end
+  append_to_file 'app/javascript/entrypoints/application.js', 'import "../controllers/index"'
 
   inject_into_file "app/views/layouts/application.html.erb", before: "    <%= vite_client_tag %>" do <<-EOF
     <%= vite_stylesheet_tag "application", "data-turbo-track": "reload" %>
 EOF
   end
 
-  gsub_file "app/views/layouts/application.html.erb", '    <%= stylesheet_link_tag "application" %>', ''
+    gsub_file "app/views/layouts/application.html.erb", '    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+', ''
+  gsub_file "app/views/layouts/application.html.erb", '    <%= javascript_importmap_tags %>
+', ''
 
-  gsub_file "config/vite.json", '"sourceCodeDir": "app/frontend",', '"sourceCodeDir": "app/javascript",', verbose: true
-      
+
   inject_into_file "config/vite.json", before: '    "publicOutputDir": "vite-dev"' do <<-EOF
     "host": "0.0.0.0",
 EOF
