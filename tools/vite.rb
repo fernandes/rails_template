@@ -21,7 +21,9 @@ after_bundle do
   append_to_file 'app/javascript/entrypoints/application.js', 'import "../controllers/index"'
 
   inject_into_file "app/views/layouts/application.html.erb", before: "    <%= vite_client_tag %>" do <<-EOF
+    <% if Rails.env.development? %>
     <%= vite_stylesheet_tag "application", "data-turbo-track": "reload" %>
+    <% end %>
 EOF
   end
 
@@ -30,11 +32,18 @@ EOF
   gsub_file "app/views/layouts/application.html.erb", '    <%= javascript_importmap_tags %>
 ', ''
 
+  gsub_file 'config/vite.json', '"watchAdditionalPaths": []', '"watchAdditionalPaths": ["app/views/**/*.erb"]'
+
 
   inject_into_file "config/vite.json", before: '    "publicOutputDir": "vite-dev"' do <<-EOF
     "host": "0.0.0.0",
 EOF
   end
+
+inject_into_file 'app/javascript/entrypoints/application.js', <<-CODE
+   // https://vite-ruby.netlify.app/guide/troubleshooting.html#safari-does-not-reflect-css-changes-in-development
+  import(`../css/${import.meta.env.MODE}.css`)
+CODE
 
   git add: "."
   git commit: "-m vite"
