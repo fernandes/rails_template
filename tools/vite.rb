@@ -40,8 +40,8 @@ EOF
 EOF
   end
 
-inject_into_file 'app/javascript/entrypoints/application.js', <<-CODE
-   // https://vite-ruby.netlify.app/guide/troubleshooting.html#safari-does-not-reflect-css-changes-in-development
+inject_into_file 'app/javascript/entrypoints/application.js', <<~CODE
+  // https://vite-ruby.netlify.app/guide/troubleshooting.html#safari-does-not-reflect-css-changes-in-development
   import(`../css/${import.meta.env.MODE}.css`)
 CODE
 

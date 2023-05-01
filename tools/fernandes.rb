@@ -25,7 +25,7 @@ after_bundle do
 
   application %(config.hosts << ENV.fetch('CONFIG_HOSTS', ''))
 
-  inject_into_file 'config/initializers/content_security_policy.rb', <<~CODE
+  inject_into_file 'config/initializers/content_security_policy.rb', <<~'CODE'
     Rails.application.configure do
       config.content_security_policy do |policy|
         if Rails.env.development?
@@ -37,12 +37,6 @@ after_bundle do
     end
   CODE
 
-  file 'app/javascript/entrypoints/application.css', force: true do
-    <<~CODE
-      import(`../css/${import.meta.env.MODE}.css`)
-    CODE
-  end
-
   file 'app/javascript/css/development.css', <<~CODE
     @import 'tailwindcss/base';
     @import 'tailwindcss/components';
@@ -50,6 +44,28 @@ after_bundle do
   CODE
 
   file 'app/javascript/css/production.css', <<~CODE
+  CODE
+
+  remove_file 'vite.config.js'
+  file 'vite.config.js', <<~CODE
+    import { defineConfig } from 'vite'
+    import StimulusHMR from 'vite-plugin-stimulus-hmr'
+    import FullReload from 'vite-plugin-full-reload'
+    import RubyPlugin from 'vite-plugin-ruby'
+
+    export default defineConfig({
+      plugins: [
+        StimulusHMR(),
+        FullReload(['config/routes.rb', 'app/views/**/*']),
+        RubyPlugin(),
+      ],
+      server: {
+        hmr: {
+          host: `${process.env.VITE_HMR_HOST}`,
+          clientPort: 443,
+        },
+      },
+    })
   CODE
 
   git add: '.'
