@@ -4,7 +4,7 @@
 
 require_relative "../utils.rb"
 
-if File.exists? 'Guardfile'
+if File.exist? 'Guardfile'
   puts 'Guardfile already exists, skipping guard setup'
   return
 end
