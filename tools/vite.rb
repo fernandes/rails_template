@@ -21,9 +21,7 @@ after_bundle do
   append_to_file 'app/javascript/entrypoints/application.js', 'import "../controllers/index"'
 
   inject_into_file "app/views/layouts/application.html.erb", before: "    <%= vite_client_tag %>" do <<-EOF
-    <% if Rails.env.development? %>
-    <%= vite_stylesheet_tag "application", "data-turbo-track": "reload" %>
-    <% end %>
+    <%= vite_stylesheet_tag "application", "data-turbo-track": "reload" unless ViteRuby.instance.dev_server_running? %>
 EOF
   end
 
